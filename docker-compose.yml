@@ -1,0 +1,46 @@
+version: '3'
+services:
+
+  tweet_collector:
+    build: tweet_collector/
+    volumes:
+    - ./tweet_collector/:/code
+    links:
+    - mongodb
+
+  mongodb:
+    image: mongo
+    ports:
+    - 27017:27017
+
+  #etl_job:
+  #  build: etl_job/
+  #  volumes:
+  #  - ./etl_job/:/code
+  #  depends_on:
+  #  - mongodb
+  #  - postgres
+
+  airflow:
+    image: puckel/docker-airflow
+    volumes:
+    - ./docker-airflow/dags/:/usr/local/airflow/dags/
+    - ./docker-airflow/requirements.txt:/requirements.txt
+    ports:
+    - "8081:8080"
+    environment:
+    - LOAD_EX=y
+    command: ["webserver", "scheduler"]
+
+  postgres:
+    image: postgres
+    environment:
+    - POSTGRES_PASSWORD=
+    ports:
+    - 5567:5432
+
+  slack_bot:
+    build: slack_bot/
+    volumes:
+    - ./slack_bot/:/code
+    #links:
