@@ -1,0 +1,4 @@
+#important stuff
+tweepy
+config
+pymongo
